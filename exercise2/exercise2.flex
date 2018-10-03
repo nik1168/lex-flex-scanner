@@ -1,56 +1,22 @@
-//import java_cup.runtime.*; uncommet if you use CUP
-
 %%// Options of the scanner
 
-%class Lexer5	//Name
+%class Lexer2	//Name
 %unicode			//Use unicode
-%line				//Use line counter (yyline variable)
-%column			//Use character counter by line (yycolumn variable)
-
-//you can use either %cup or %standalone
-//   %standalone is for a Scanner which works alone and scan a file
-//   %cup is to interact with a CUP parser. In this case, you have to return
-//        a Symbol object (defined in the CUP library) for each action.
-//        Two constructors:
-//                          1. Symbol(int id,int line, int column)
-//                          2. Symbol(int id,int line, int column,Object value)
-%standalone
-
-////////
-//CODE//
-////////
-%init{//code to execute before scanning
-	System.out.println("Initialization");
-%init}
+%line         //Use line counter (yyline variable)
+%standalone		//Tell that Jflex don't use a parser
 
 %{//adding Java code (methods, inner classes, ...)
+ private void test(String word){
+            System.out.print(word);
+ 		}
 %}
 
-%eof{//code to execute after scanning
-   System.out.println("Done");
-%eof}
+//Extended Regular Expressions
 
-////////////////////////////////
-//Extended Regular Expressions//
-////////////////////////////////
+Alpha          = [A-Z]|[a-z]
+Numeric        = [0-9]
+AlphaNumChar	 = {Alpha}|{Numeric}
 
-EndOfLine = "\r"?"\n"
+%% //Identification of tokens
 
-//////////
-//States//
-//////////
-
-%xstate YYINITIAL,PRINT
-
-%%//Identification of tokens and actions
-
-<YYINITIAL>{
-   {EndOfLine} {yybegin(PRINT);}
-   .           {} //by default, all non matched char are printed on output
-                  //we force to not print them
-}
-
-<PRINT>{
-	{EndOfLine} {yybegin(YYINITIAL);}
-	.           {System.out.println(yytext());} //we print them explicitly
-}
+{Alpha}	{test(yytext());}
