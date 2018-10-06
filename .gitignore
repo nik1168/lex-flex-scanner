@@ -1,2 +1,5 @@
 .idea
 *.class
+*.java
+!LexicalUnit.java
+!Symbol.java
