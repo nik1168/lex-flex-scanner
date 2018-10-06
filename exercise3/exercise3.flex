@@ -20,14 +20,14 @@
 //CODE//
 ////////
 %init{//code to execute before scanning
-	System.out.println("Initialization");
+	System.out.println("Initialization exercise 3");
 %init}
 
 %{//adding Java code (methods, inner classes, ...)
 %}
 
 %eof{//code to execute after scanning
-   System.out.println("Done");
+   System.out.println("Done scanning");
 %eof}
 
 ////////////////////////////////
@@ -35,22 +35,25 @@
 ////////////////////////////////
 
 EndOfLine = "\r"?"\n"
+OpenCurly = "{"
+CloseCurly = "!}"
 
 //////////
 //States//
 //////////
 
-%xstate YYINITIAL,PRINT
+%xstate YYINITIAL, PRINT_COMMENT
 
 %%//Identification of tokens and actions
 
 <YYINITIAL>{
-   {EndOfLine} {yybegin(PRINT);}
+   {OpenCurly} {yybegin(PRINT_COMMENT);}
    .           {} //by default, all non matched char are printed on output
                   //we force to not print them
 }
 
-<PRINT>{
-	{EndOfLine} {yybegin(YYINITIAL);}
-	.           {System.out.println(yytext());} //we print them explicitly
+<PRINT_COMMENT>{
+	{CloseCurly} {yybegin(YYINITIAL);}
+	.           {System.out.print(yytext());} //we print them explicitly
 }
+
