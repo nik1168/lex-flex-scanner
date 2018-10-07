@@ -4,53 +4,38 @@
 
 %class Lexer4	//Name
 %unicode			//Use unicode
-%line				//Use line counter (yyline variable)
-%column			//Use character counter by line (yycolumn variable)
-
-//you can use either %cup or %standalone
-//   %standalone is for a Scanner which works alone and scan a file
-//   %cup is to interact with a CUP parser. In this case, you have to return
-//        a Symbol object (defined in the CUP library) for each action.
-//        Two constructors:
-//                          1. Symbol(int id,int line, int column)
-//                          2. Symbol(int id,int line, int column,Object value)
+%column			//Use character counter by line (yycolumn variable)                       2. Symbol(int id,int line, int column,Object value)
 %standalone
 
-////////
-//CODE//
-////////
-%init{//code to execute before scanning
-	System.out.println("Initialization");
-%init}
-
 %{//adding Java code (methods, inner classes, ...)
+private int compilerCount = 0;
+private String startCharacter = "";
+
+private void replaceCompilerWord(){
+    compilerCount++;
+    if(startCharacter.equals("a")){
+        System.out.print("nope");
+    }
+    else if(startCharacter.equals("b")){
+       System.out.print("???"); 
+    }
+    else if(startCharacter.equals("c")){
+        System.out.print("!!!"); 
+    }
+}
+
+private void setStartCharacter(String word){
+    startCharacter = word.substring(0, 1);
+}
 %}
 
-%eof{//code to execute after scanning
-   System.out.println("Done");
-%eof}
-
-////////////////////////////////
 //Extended Regular Expressions//
-////////////////////////////////
 
+Compiler = "compiler"
 EndOfLine = "\r"?"\n"
-
-//////////
-//States//
-//////////
-
-%xstate YYINITIAL,PRINT
+Line				= .+
 
 %%//Identification of tokens and actions
+{Compiler}	{replaceCompilerWord();}
+^.           {setStartCharacter(yytext());System.out.print(yytext());}
 
-<YYINITIAL>{
-   {EndOfLine} {yybegin(PRINT);}
-   .           {} //by default, all non matched char are printed on output
-                  //we force to not print them
-}
-
-<PRINT>{
-	{EndOfLine} {yybegin(YYINITIAL);}
-	.           {System.out.println(yytext());} //we print them explicitly
-}
